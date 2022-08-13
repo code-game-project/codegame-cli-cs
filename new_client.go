@@ -32,6 +32,9 @@ var clientEventsTemplate string
 //go:embed templates/new/client/csproj.tmpl
 var clientCSProjTemplate string
 
+//go:embed templates/new/gitignore.tmpl
+var gitignoreTemplate string
+
 func CreateNewClient(projectName string) error {
 	data, err := modules.ReadCommandConfig[modules.NewClientData]()
 	if err != nil {
@@ -154,6 +157,10 @@ func execClientTemplate(projectName, gameName, displayName, description string, 
 			return err
 		}
 		err = ExecTemplate(clientCSProjTemplate, projectName+".csproj", data)
+		if err != nil {
+			return err
+		}
+		err = ExecTemplate(gitignoreTemplate, ".gitignore", data)
 		if err != nil {
 			return err
 		}

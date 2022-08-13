@@ -13,6 +13,7 @@ public partial class Game : IDisposable
     /// Sends a `{{.Name}}` command.
     /// </summary>
     /// <param name="data">The command data.</param>
+    /// <exception cref="InvalidOperationException">Thrown when socket is not connected to a player.</exception>
     /// <exception cref="System.Text.Json.JsonException">Thrown when the command could not be serialized.</exception>
     public void Send{{.PascalName}}({{.PascalName}}Cmd data)
     {

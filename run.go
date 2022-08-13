@@ -33,17 +33,17 @@ func Run() error {
 }
 
 func runClient(url string, args []string) error {
-	cmdArgs := []string{"run", "."}
+	cmdArgs := []string{"run", "--"}
 	cmdArgs = append(cmdArgs, args...)
 
 	env := []string{"CG_GAME_URL=" + url}
 	env = append(env, os.Environ()...)
 
-	if _, err := exec.LookPath("go"); err != nil {
-		return fmt.Errorf("'go' ist not installed!")
+	if _, err := exec.LookPath("dotnet"); err != nil {
+		return fmt.Errorf("'dotnet' ist not installed!")
 	}
 
-	cmd := exec.Command("go", cmdArgs...)
+	cmd := exec.Command("dotnet", cmdArgs...)
 	cmd.Stdin = os.Stdin
 	cmd.Stdout = os.Stdout
 	cmd.Stderr = os.Stderr
@@ -51,7 +51,7 @@ func runClient(url string, args []string) error {
 
 	err := cmd.Run()
 	if err != nil {
-		return fmt.Errorf("Failed to run 'CG_GAME_URL=%s go %s'", url, strings.Join(cmdArgs, " "))
+		return fmt.Errorf("Failed to run 'CG_GAME_URL=%s dotnet %s'", url, strings.Join(cmdArgs, " "))
 	}
 	return nil
 }

@@ -65,8 +65,11 @@ func updateClient(projectName, libraryVersion string, config *cgfile.CodeGameFil
 	cli.BeginLoading("Updating csharp-client...")
 	installLibArgs := []string{"add", "package", "CodeGame.Client"}
 	if libraryVersion != "latest" {
-		installLibArgs = append(installLibArgs, "--version")
-		installLibArgs = append(installLibArgs, libraryVersion)
+		libraryVersion, err = nugetVersion("CodeGame.Client", libraryVersion)
+		if err != nil {
+			return err
+		}
+		installLibArgs = append(installLibArgs, "--version", libraryVersion)
 	}
 	_, err = exec.Execute(true, "dotnet", installLibArgs...)
 	if err != nil {

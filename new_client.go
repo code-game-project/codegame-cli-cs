@@ -1,8 +1,12 @@
 package main
 
 import (
+	"encoding/json"
+	"fmt"
+	"net/http"
 	"os"
 	"path/filepath"
+	"sort"
 	"strings"
 
 	_ "embed"
@@ -10,7 +14,9 @@ import (
 	"github.com/Bananenpro/cli"
 	"github.com/code-game-project/go-utils/cggenevents"
 	"github.com/code-game-project/go-utils/exec"
+	"github.com/code-game-project/go-utils/external"
 	"github.com/code-game-project/go-utils/modules"
+	"github.com/code-game-project/go-utils/semver"
 	"github.com/code-game-project/go-utils/server"
 )
 
@@ -67,6 +73,10 @@ func CreateNewClient(projectName string) error {
 	cli.BeginLoading("Installing csharp-client...")
 	installLibArgs := []string{"add", "package", "CodeGame.Client"}
 	if data.LibraryVersion != "latest" {
+		data.LibraryVersion, err = nugetVersion("CodeGame.Client", data.LibraryVersion)
+		if err != nil {
+			return err
+		}
 		installLibArgs = append(installLibArgs, "--version", data.LibraryVersion)
 	}
 	_, err = exec.Execute(true, "dotnet", installLibArgs...)
@@ -168,4 +178,56 @@ func toPascal(text string) string {
 	text = strings.Title(text)
 	text = strings.ReplaceAll(text, " ", "")
 	return text
+}
+
+func nugetVersion(pkg, version string) (string, error) {
+	res, err := http.Get(fmt.Sprintf("https://api.nuget.org/v3/registration5-gz-semver2/%s/index.json", strings.ToLower(pkg)))
+	if err != nil || res.StatusCode != http.StatusOK || !external.HasContentType(res.Header, "application/json") {
+		return "", fmt.Errorf("Couldn't access version information from 'https://api.nuget.org/v3/registration5-gz-semver2/%s/index.json'.", strings.ToLower(pkg))
+	}
+	defer res.Body.Close()
+	type response struct {
+		Items []struct {
+			Items []struct {
+				Entry struct {
+					Version string `json:"version"`
+				} `json:"catalogEntry"`
+			} `json:"items"`
+		} `json:"items"`
+	}
+	var data response
+	err = json.NewDecoder(res.Body).Decode(&data)
+	if err != nil {
+		return "", fmt.Errorf("Couldn't decode nuget version data: %s", err)
+	}
+
+	versions := make([]string, 0, len(data.Items[0].Items))
+
+	for _, item := range data.Items[0].Items {
+		if strings.HasPrefix(item.Entry.Version, version) {
+			versions = append(versions, item.Entry.Version)
+		}
+	}
+
+	sort.Slice(versions, func(i, j int) bool {
+		a := versions[i]
+		b := versions[j]
+
+		a1, a2, a3, err := semver.ParseVersion(a)
+		if err != nil {
+			return false
+		}
+		b1, b2, b3, err := semver.ParseVersion(b)
+		if err != nil {
+			return false
+		}
+
+		return a1 > b1 || (a1 == b1 && a2 > b2) || (a1 == b1 && a2 == b2 && a3 > b3)
+	})
+
+	if len(versions) > 0 {
+		return versions[0], nil
+	}
+
+	return "", fmt.Errorf("Couldn't fetch the correct library package version to use.")
 }

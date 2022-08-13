@@ -1,4 +1,4 @@
-module github.com/code-game-project/codegame-cli-go
+module github.com/code-game-project/codegame-cli-cs
 
 go 1.18
 

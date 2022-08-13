@@ -67,8 +67,7 @@ func CreateNewClient(projectName string) error {
 	cli.BeginLoading("Installing csharp-client...")
 	installLibArgs := []string{"add", "package", "CodeGame.Client"}
 	if data.LibraryVersion != "latest" {
-		installLibArgs = append(installLibArgs, "--version")
-		installLibArgs = append(installLibArgs, data.LibraryVersion)
+		installLibArgs = append(installLibArgs, "--version", data.LibraryVersion)
 	}
 	_, err = exec.Execute(true, "dotnet", installLibArgs...)
 	if err != nil {

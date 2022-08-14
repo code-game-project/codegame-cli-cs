@@ -33,7 +33,7 @@ func Run() error {
 }
 
 func runClient(url string, args []string) error {
-	cmdArgs := []string{"run", "--"}
+	cmdArgs := []string{"run", "--no-self-contained", "--"}
 	cmdArgs = append(cmdArgs, args...)
 
 	env := []string{"CG_GAME_URL=" + url}

@@ -4,7 +4,7 @@ go 1.18
 
 require (
 	github.com/Bananenpro/cli v0.3.0
-	github.com/code-game-project/go-utils v0.2.11
+	github.com/code-game-project/go-utils v0.2.13
 )
 
 require (

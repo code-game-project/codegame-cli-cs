@@ -23,16 +23,19 @@ func Build() error {
 	if err != nil {
 		return err
 	}
+	data.OS = strings.ReplaceAll(data.OS, "macos", "osx")
+	data.OS = strings.ReplaceAll(data.OS, "windows", "win")
+	data.Arch = strings.ReplaceAll(data.Arch, "arm32", "arm")
 
 	switch config.Type {
 	case "client":
-		return buildClient(config.Game, data.Output, config.URL)
+		return buildClient(config.Game, data.Output, config.URL, data.OS, data.Arch)
 	default:
 		return fmt.Errorf("Unknown project type: %s", config.Type)
 	}
 }
 
-func buildClient(gameName, output, url string) error {
+func buildClient(gameName, output, url, os, arch string) error {
 	cli.BeginLoading("Building...")
 	gameDir := toPascal(gameName)
 	err := replaceInFile(filepath.Join(gameDir, "Game.cs"), "throw new InvalidOperationException(\"The CG_GAME_URL environment variable must be set.\")", "return \""+url+"\"")
@@ -40,14 +43,14 @@ func buildClient(gameName, output, url string) error {
 		return err
 	}
 
-	args := []string{"build", "--nologo", "--self-contained", "--configuration", "Release"}
-	os := getOS()
-	arch := getArch()
-	if os != "" && arch != "" {
-		args = append(args, "--runtime", os+"-"+arch)
-	} else {
-		args = append(args, "--use-current-runtime")
+	args := []string{"publish", "--nologo", "--configuration", "Release", "--self-contained"}
+	if os == "current" {
+		os = getOS()
 	}
+	if arch == "current" {
+		arch = getArch()
+	}
+	args = append(args, "--runtime", os+"-"+arch)
 	if output != "" {
 		args = append(args, "--output", output)
 	}

@@ -61,7 +61,7 @@ public partial class Game : IDisposable
     /// <list type="bullet">
     /// <item>--public (Makes the created game public)</item>
     /// <item>--protected (Makes the created game protected.</item>
-    /// <item>--spectate (Spectates the game instead of joining it. (the username is not neccessary if this flag is set)</item>
+    /// <item>--spectate (Spectates the game instead of joining it. (the username is not necessary if this flag is set)</item>
     /// </list>
     /// </para>
     /// </summary>
@@ -79,7 +79,7 @@ public partial class Game : IDisposable
 
         var publicFlag = new Option<bool>("--public", "Make the created game public.");
         var protectedFlag = new Option<bool>("--protected", "Make the created game protected.");
-        var spectateFlag = new Option<bool>("--spectate", "Spectate the created/joined game. The username is not neccessary if this flag is set.");
+        var spectateFlag = new Option<bool>("--spectate", "Spectate the created/joined game. The username is not necessary if this flag is set.");
 
         var gameIdArg = new Argument<string>("game_id", "The ID of the game.");
         var usernameArg = new Argument<string>("username", () => "", "The username of the player.");

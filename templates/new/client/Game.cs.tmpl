@@ -171,7 +171,7 @@ public partial class Game : IDisposable
     {
         var socket = await GameSocket.Create(URL);
         var gameId = await socket.CreateGame(makePublic, config);
-        return await JoinGame(gameId, username);
+        return await JoinGame(socket, gameId, username);
     }
 
     /// <summary>
@@ -189,7 +189,7 @@ public partial class Game : IDisposable
     {
         var socket = await GameSocket.Create(URL);
         var (gameId, joinSecret) = await socket.CreateProtectedGame(makePublic, config);
-        return (await JoinGame(gameId, username, joinSecret), joinSecret);
+        return (await JoinGame(socket, gameId, username, joinSecret), joinSecret);
     }
 
     /// <summary>

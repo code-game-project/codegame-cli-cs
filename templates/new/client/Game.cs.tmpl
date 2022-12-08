@@ -89,7 +89,7 @@ public partial class Game : IDisposable
 
         Game? game = null;
 
-        var createCmd = new Command("create", "Create a new game.");
+        var createCmd = new Command("create", "Create and join a new game.");
         createCmd.AddArgument(usernameArg);
         createCmd.AddOption(publicFlag);
         createCmd.AddOption(protectedFlag);

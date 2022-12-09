@@ -36,7 +36,7 @@ public partial class Game : IDisposable
     /// </summary>
     public GameConfig Config { get; private set; }
     /// <summary>
-    /// Whether the socket is connected in spectate mode.
+    /// Whether the socket is connected as a spectator.
     /// </summary>
     public bool Spectating { get; private set; }
     /// <summary>
@@ -47,21 +47,21 @@ public partial class Game : IDisposable
     private GameSocket socket;
 
     /// <summary>
-    /// Parses the command line arguments and creates a new game depending on which flags and commands were used.
+    /// Parses the command line arguments and creates a new game depending on which flags and commands are used.
     /// <para>
     /// Commands:
     /// <list type="bullet">
-    /// <item>create      (Creates a new game and joins it.)</item>
-    /// <item>join        (Joins an existing game.)</item>
-    /// <item>reconnect   (Reconnects to an existing session.)</item>
+    /// <item>create      Creates a new game and joins it.</item>
+    /// <item>join        Joins an existing game.</item>
+    /// <item>reconnect   Reconnects to an existing session.</item>
     /// </list>
     /// </para>
     /// <para>
     /// Flags:
     /// <list type="bullet">
-    /// <item>--public (Makes the created game public)</item>
-    /// <item>--protected (Makes the created game protected.</item>
-    /// <item>--spectate (Spectates the game instead of joining it. (the username is not necessary if this flag is set)</item>
+    /// <item>--public    Makes the created game public.</item>
+    /// <item>--protected Makes the created game protected.</item>
+    /// <item>--spectate Spectates the game instead of joining it. (the username is not necessary if this flag is set)</item>
     /// </list>
     /// </para>
     /// </summary>

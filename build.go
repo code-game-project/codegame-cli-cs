@@ -35,13 +35,19 @@ func Build() error {
 	}
 }
 
-func buildClient(gameName, output, url, os, arch string) error {
+func buildClient(gameName, output, url, os, arch string) (err error) {
 	cli.BeginLoading("Building...")
 	gameDir := toPascal(gameName)
-	err := replaceInFile(filepath.Join(gameDir, "Game.cs"), "throw new InvalidOperationException(\"The CG_GAME_URL environment variable must be set.\")", "return \""+url+"\"")
+	err = replaceInFile(filepath.Join(gameDir, "Game.cs"), "throw new InvalidOperationException(\"The CG_GAME_URL environment variable must be set.\")", "return \""+url+"\"")
 	if err != nil {
 		return err
 	}
+	defer func() {
+		err2 := replaceInFile(filepath.Join(gameDir, "Game.cs"), "return \""+url+"\"", "throw new InvalidOperationException(\"The CG_GAME_URL environment variable must be set.\")")
+		if err == nil && err2 != nil {
+			err = err2
+		}
+	}()
 
 	args := []string{"publish", "--nologo", "--configuration", "Release", "--self-contained"}
 	if os == "current" {
@@ -59,10 +65,6 @@ func buildClient(gameName, output, url, os, arch string) error {
 		return err
 	}
 
-	err = replaceInFile(filepath.Join(gameDir, "Game.cs"), "return \""+url+"\"", "throw new InvalidOperationException(\"The CG_GAME_URL environment variable must be set.\")")
-	if err != nil {
-		return err
-	}
 	cli.FinishLoading()
 
 	return nil
